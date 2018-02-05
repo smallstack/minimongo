@@ -101,7 +101,7 @@ exports.autoselectLocalDb = function(options, success, error) {
   IndexedDb = __webpack_require__(7);
   WebSQLDb = __webpack_require__(8);
   LocalStorageDb = __webpack_require__(9);
-  MemoryDb = __webpack_require__(4);
+  MemoryDb = __webpack_require__(5);
   browser = bowser.browser;
   if (!isLocalStorageSupported()) {
     return new MemoryDb(options, success);
@@ -2421,9 +2421,9 @@ exports.compileSort = LocalCollection._compileSort;
     }
     // AMD / RequireJS
     else if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
             return async;
-        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+        }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
     }
     // included directly via <script> tag
@@ -2433,10 +2433,37 @@ exports.compileSort = LocalCollection._compileSort;
 
 }());
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(13).setImmediate, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(13).setImmediate, __webpack_require__(6)))
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Collection, MemoryDb, async, compileSort, processFind, utils, _,
@@ -2742,33 +2769,6 @@ Collection = (function() {
   return Collection;
 
 })();
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
 
 
 /***/ }),
@@ -4842,13 +4842,13 @@ module.exports = __webpack_require__(12);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.MemoryDb = __webpack_require__(4);
+exports.MemoryDb = __webpack_require__(5);
 exports.LocalStorageDb = __webpack_require__(9);
 exports.IndexedDb = __webpack_require__(7);
 exports.WebSQLDb = __webpack_require__(8);
-exports.RemoteDb = __webpack_require__(18);
+// exports.RemoteDb = require('./lib/RemoteDb');
 exports.HybridDb = __webpack_require__(10);
-exports.ReplicatingDb = __webpack_require__(21);
+exports.ReplicatingDb = __webpack_require__(18);
 exports.utils = __webpack_require__(0);
 
 
@@ -4856,7 +4856,7 @@ exports.utils = __webpack_require__(0);
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -4907,9 +4907,17 @@ exports._unrefActive = exports.active = function(item) {
 
 // setimmediate attaches itself to the global object
 __webpack_require__(14);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
+// On some exotic environments, it's not clear which object `setimmeidate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 14 */
@@ -5102,7 +5110,7 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(6)))
 
 /***/ }),
 /* 15 */
@@ -5730,11 +5738,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global windo
 
 /**
  * @license IDBWrapper - A cross-browser wrapper for IndexedDB
- * Version 1.7.1
- * Copyright (c) 2011 - 2016 Jens Arps
+ * Version 1.7.2
+ * Copyright (c) 2011 - 2017 Jens Arps
  * http://jensarps.de/
  *
- * Licensed under the MIT (X11) license
+ * Licensed under the MIT license
  */
 
 (function (name, definition, global) {
@@ -5786,7 +5794,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global windo
      *
      * @constructor
      * @name IDBStore
-     * @version 1.7.1
+     * @version 1.7.2
      *
      * @param {Object} [kwArgs] An options object used to configure the store and
      *  set callbacks
@@ -5896,7 +5904,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global windo
          *
          * @type {String}
          */
-        version: '1.7.1',
+        version: '1.7.2',
 
         /**
          * A reference to the IndexedDB object
@@ -7139,254 +7147,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global windo
 
 /***/ }),
 /* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $, Collection, RemoteDb, async, jQueryHttpClient, utils, _;
-
-_ = __webpack_require__(1);
-
-$ = __webpack_require__(19);
-
-async = __webpack_require__(3);
-
-utils = __webpack_require__(0);
-
-jQueryHttpClient = __webpack_require__(20);
-
-module.exports = RemoteDb = (function() {
-  function RemoteDb(url, client, httpClient) {
-    this.url = url;
-    this.client = client;
-    this.collections = {};
-    this.httpClient = httpClient || jQueryHttpClient;
-  }
-
-  RemoteDb.prototype.addCollection = function(name, options, success, error) {
-    var collection, url, _ref;
-    if (options == null) {
-      options = {};
-    }
-    if (_.isFunction(options)) {
-      _ref = [{}, options, success], options = _ref[0], success = _ref[1], error = _ref[2];
-    }
-    url = options.url || (this.url + name);
-    collection = new Collection(name, url, this.client, this.httpClient);
-    this[name] = collection;
-    this.collections[name] = collection;
-    if (success != null) {
-      return success();
-    }
-  };
-
-  RemoteDb.prototype.removeCollection = function(name, success, error) {
-    delete this[name];
-    delete this.collections[name];
-    if (success != null) {
-      return success();
-    }
-  };
-
-  RemoteDb.prototype.getCollectionNames = function() {
-    return _.keys(this.collections);
-  };
-
-  return RemoteDb;
-
-})();
-
-Collection = (function() {
-  function Collection(name, url, client, httpClient) {
-    this.name = name;
-    this.url = url;
-    this.client = client;
-    this.httpClient = httpClient;
-  }
-
-  Collection.prototype.find = function(selector, options) {
-    if (options == null) {
-      options = {};
-    }
-    return {
-      fetch: (function(_this) {
-        return function(success, error) {
-          var params;
-          params = {};
-          if (options.sort) {
-            params.sort = JSON.stringify(options.sort);
-          }
-          if (options.limit) {
-            params.limit = options.limit;
-          }
-          if (options.skip) {
-            params.skip = options.skip;
-          }
-          if (options.fields) {
-            params.fields = JSON.stringify(options.fields);
-          }
-          if (_this.client) {
-            params.client = _this.client;
-          }
-          params.selector = JSON.stringify(selector || {});
-          if ((typeof navigator !== "undefined" && navigator !== null) && navigator.userAgent.toLowerCase().indexOf('android 2.3') !== -1) {
-            params._ = new Date().getTime();
-          }
-          return _this.httpClient("GET", _this.url, params, null, success, error);
-        };
-      })(this)
-    };
-  };
-
-  Collection.prototype.findOne = function(selector, options, success, error) {
-    var params, _ref;
-    if (options == null) {
-      options = {};
-    }
-    if (_.isFunction(options)) {
-      _ref = [{}, options, success], options = _ref[0], success = _ref[1], error = _ref[2];
-    }
-    params = {};
-    if (options.sort) {
-      params.sort = JSON.stringify(options.sort);
-    }
-    params.limit = 1;
-    if (this.client) {
-      params.client = this.client;
-    }
-    params.selector = JSON.stringify(selector || {});
-    if ((typeof navigator !== "undefined" && navigator !== null) && navigator.userAgent.toLowerCase().indexOf('android 2.3') !== -1) {
-      params._ = new Date().getTime();
-    }
-    return this.httpClient("GET", this.url, params, null, function(results) {
-      if (results && results.length > 0) {
-        return success(results[0]);
-      } else {
-        return success(null);
-      }
-    }, error);
-  };
-
-  Collection.prototype.upsert = function(docs, bases, success, error) {
-    var items, results, _ref;
-    _ref = utils.regularizeUpsert(docs, bases, success, error), items = _ref[0], success = _ref[1], error = _ref[2];
-    if (!this.client) {
-      throw new Error("Client required to upsert");
-    }
-    results = [];
-    return async.eachLimit(items, 8, (function(_this) {
-      return function(item, cb) {
-        var params;
-        if (!item.doc._id) {
-          item.doc._id = utils.createUid();
-        }
-        params = {
-          client: _this.client
-        };
-        if ((typeof navigator !== "undefined" && navigator !== null) && navigator.userAgent.toLowerCase().indexOf('android 2.3') !== -1) {
-          params._ = new Date().getTime();
-        }
-        if (item.base) {
-          return _this.httpClient("PATCH", _this.url + "/" + item.doc._id, params, item, function(result) {
-            results.push(result);
-            return cb();
-          }, function(err) {
-            return cb(err);
-          });
-        } else {
-          return _this.httpClient("POST", _this.url, params, item.doc, function(result) {
-            results.push(result);
-            return cb();
-          }, function(err) {
-            return cb(err);
-          });
-        }
-      };
-    })(this), function(err) {
-      if (err) {
-        if (error) {
-          error(err);
-        }
-        return;
-      }
-      if (_.isArray(docs)) {
-        if (success) {
-          return success(results);
-        }
-      } else {
-        if (success) {
-          return success(results[0]);
-        }
-      }
-    });
-  };
-
-  Collection.prototype.remove = function(id, success, error) {
-    var params;
-    if (!this.client) {
-      throw new Error("Client required to remove");
-    }
-    params = {
-      client: this.client
-    };
-    return this.httpClient("DELETE", this.url + "/" + id, params, null, success, function(err) {
-      if (err.status === 410) {
-        return success();
-      } else {
-        return error(err);
-      }
-    });
-  };
-
-  return Collection;
-
-})();
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = $;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-module.exports = function(method, url, params, data, success, error) {
-  var fullUrl, req;
-  fullUrl = url + "?" + $.param(params);
-  if (method === "GET") {
-    req = $.ajax(fullUrl, {
-      dataType: "json",
-      timeout: 180000
-    });
-  } else if (method === "DELETE") {
-    req = $.ajax(fullUrl, {
-      type: 'DELETE',
-      timeout: 60000
-    });
-  } else if (method === "POST" || method === "PATCH") {
-    req = $.ajax(fullUrl, {
-      data: JSON.stringify(data),
-      contentType: 'application/json',
-      timeout: 60000,
-      type: method
-    });
-  } else {
-    throw new Error("Unknown method " + method);
-  }
-  req.done(function(response, textStatus, jqXHR) {
-    return success(response || null);
-  });
-  return req.fail(function(jqXHR, textStatus, errorThrown) {
-    if (error) {
-      return error(jqXHR);
-    }
-  });
-};
-
-
-/***/ }),
-/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Collection, ReplicatingDb, compileSort, utils, _;
